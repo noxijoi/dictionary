@@ -1,4 +1,5 @@
 import pymorphy2
 
 morph = pymorphy2.MorphAnalyzer()
-print(morph.parse("читает"))
+tag = morph.parse("читает")
+print(tag)

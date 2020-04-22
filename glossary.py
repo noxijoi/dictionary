@@ -36,8 +36,8 @@ POS = {
     INTJ: 'междометие'
 }
 
-IMMUTABLES = [COMP, INFN, ADVB, PRED, PREP, CONJ, PRCL, INTJ]
-MUTABLES = [NOUN, ADJS, ADJS, VERB, PRTF, PRTS, GRND, NUMR, NPRO]
+IMMUTABLES = [COMP, INFN, ADVB, PRED, PREP, CONJ, GRND, PRCL, INTJ]
+MUTABLES = [NOUN, ADJS, ADJF, VERB, PRTF, PRTS, NUMR, NPRO]
 
 CASES_POS = [NOUN, ADJF, PRTF, NUMR, NPRO]
 CASES = {
@@ -49,13 +49,13 @@ CASES = {
     'loct': 'предложный'
 }
 
-NUM_POS = [NOUN, ADJF, NUMR, NPRO]
+NUM_POS = [NOUN, ADJF, NUMR, PRTF, NPRO, VERB]
 NUMS = {
     'sing': 'единственное',
     'plur': 'множественное'
 }
 
-GENDER_POS = [ADJF, ADJS, VERB, NUMR, PRTF, PRTS]
+GENDER_POS = [ADJF, ADJS,  NUMR, PRTF, PRTS]
 GENDERS = {
     'masc': 'мужской род',
     'femn': 'женский род',

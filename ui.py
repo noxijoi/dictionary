@@ -11,7 +11,7 @@ dictList = None
 
 def processText(txtEntry):
     print(txtEntry.get('1.0', END))
-    pass
+
 
 
 class AppUI(Frame):
