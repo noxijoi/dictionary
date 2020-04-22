@@ -9,7 +9,6 @@ morph = pymorphy2.MorphAnalyzer()
 class Record:
     pos: str
     base: str
-    unchangeable: bool
     endings: List[str]
 
     
