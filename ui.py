@@ -1,17 +1,35 @@
 from functools import partial
 from tkinter import *
 import tkinter.ttk as ttk
+from itertools import groupby
 
 from glossary import *
-from vocab import Record
+from vocab import Record, create_vocabulary_from_text, gen_rec_form_str
 
-lexems =[]
+lexems = set()
 dictList = None
+recDisplay = None
 
 
 def processText(txtEntry):
-    print(txtEntry.get('1.0', END))
+    global lexems
+    text = txtEntry.get('1.0', END)
+    records = create_vocabulary_from_text(text)
+    for record in records:
+        lexems.add(record)
+    updateDict()
 
+
+def displayLexem(args):
+    global dictList
+    base = dictList.get(dictList.curselection())
+    rec = None
+    for lexem in lexems:
+        if lexem.base == base:
+            rec = lexem
+    global recDisplay
+    recDisplay['text'] = gen_rec_form_str(rec)
+    recDisplay.pack()
 
 
 class AppUI(Frame):
@@ -27,21 +45,10 @@ class AppUI(Frame):
         frame1 = Frame(self)
         frame1.pack(fill=Y, side=LEFT)
 
-        searchLbl = Label(frame1, text="Поиск")
-        searchLbl.pack()
-
-        searchFrame = Frame(frame1)
-        searchFrame.pack(fill=X)
-
-        searchEntry = Entry(searchFrame)
-        searchEntry.pack(side=LEFT, fill=X, expand=True, padx=5, pady=5)
-
-        searchBtn = Button(searchFrame, text="Найти")
-        searchBtn.pack(side=RIGHT)
-
         Label(frame1, text="Словарь").pack(padx=5, pady=5)
         global dictList
         dictList = Listbox(frame1, width=40)
+        dictList.bind("<Double-Button-1>", displayLexem)
         dictList.pack(fill=Y, expand=True, padx=5, pady=5)
 
         frame2 = Frame(self)
@@ -61,15 +68,22 @@ class AppUI(Frame):
         newLexemBtn = Button(frame2, text="Добавить", command=partial(lexemaModal, self.parent))
         newLexemBtn.pack()
 
+        global recDisplay
+        Label(frame2, text="Информация о записи:").pack()
+        recDisplay = Label(frame2)
+
+
 
 def getEndingsArray(entries=[]):
     endings =[]
     for entry in entries:
+        entries_block =[]
         str = entry.get()
         arr = str.split(' ')
         for ending in arr:
             ending.replace('-', '')
-            endings.append(ending)
+            entries_block.append(ending)
+        endings.append(entries_block)
     return endings
 
 
@@ -224,25 +238,26 @@ def getCasesEntriesList(root):
 
 
 def updateDict():
+    global lexems
     dictList.delete(0,END)
     for lex in lexems:
         dictList.insert(0, lex.base)
     dictList.pack()
 
 
-def saveMutableLexem(pos, baseEntry, entriesF):
-    entries = entriesF()
-    rec = Record(pos, baseEntry.get(), entries)
+def saveMutableLexem(pos, baseEntry, entriesFunc):
+    endings = entriesFunc()
+    rec = Record(pos, baseEntry.get(), endings)
     global lexems
-    lexems.append(rec)
-    lexems = sorted(lexems, key=lambda l:l.base)
+    lexems.add(rec)
     updateDict()
 
 def saveImmutableLexem(posSelect, baseEntry, entries=[]):
-    rec = Record(posSelect.curselection(), baseEntry.get(), entries)
+    pos_selection =posSelect.get(posSelect.curselection())
+    pos = list(POS.keys())[list(POS.values()).index(pos_selection)]
+    rec = Record(pos, baseEntry.get(), entries)
     global lexems
-    lexems.append(rec)
-    lexems = sorted(lexems, key=lambda l:l.base)
+    lexems.add(rec)
     updateDict()
 
 def openImmutableModal(root):
