@@ -16,8 +16,10 @@ class Record:
     pos: str
     base: str
     endings: List[List[str]]
+
     def __hash__(self):
         return hash(self.base)
+
 
 def gen_rec_form_str(rec):
     word_forms = generate_word_forms(rec)
@@ -27,6 +29,7 @@ def gen_rec_form_str(rec):
             str += word + ', '
         str += '\n'
     return str
+
 
 def get_words_from_text(text):
     words = []
@@ -67,13 +70,18 @@ def process_word_forms(word_forms):
     return base, endings
 
 
+def check_word_forms(word_forms):
+    not_empty = []
+    for block in word_forms:
+        if (block[0] != None):
+            not_empty.append(block)
+    return not_empty
+
+
 def get_record_from_tagged_vord(tagged_word):
     parse = tagged_word[0]
     tag = tagged_word[0].tag
     pos = tag.POS
-    if pos in IMMUTABLES:
-        rec = Record(pos, tag.word, [])
-        return rec
     word_forms = []
     if pos == NOUN:
         for num in NUMS:
@@ -103,6 +111,10 @@ def get_record_from_tagged_vord(tagged_word):
             for per in PERS.keys():
                 word_forms_block.append(parse.inflect({num, per}))
             word_forms.append(word_forms_block)
+    word_forms = check_word_forms(word_forms)
+    if pos in IMMUTABLES or len(word_forms) == 0:
+        rec = Record(pos, parse.word, [])
+        return rec
     base, endings = process_word_forms(word_forms)
     rec = Record(pos, base, endings)
     return rec
@@ -111,9 +123,9 @@ def get_record_from_tagged_vord(tagged_word):
 def create_vocabulary_from_text(text):
     words = get_words_from_text(text)
     tagged_words = tag_words(words)
-    records = []
+    records = set()
     for tagged_word in tagged_words:
-        records.append(get_record_from_tagged_vord(tagged_word))
+        records.add(get_record_from_tagged_vord(tagged_word))
     return records
 
 

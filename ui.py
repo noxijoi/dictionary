@@ -1,7 +1,6 @@
 from functools import partial
 from tkinter import *
 import tkinter.ttk as ttk
-from itertools import groupby
 
 from glossary import *
 from vocab import Record, create_vocabulary_from_text, gen_rec_form_str
@@ -81,7 +80,7 @@ def getEndingsArray(entries=[]):
         str = entry.get()
         arr = str.split(' ')
         for ending in arr:
-            ending.replace('-', '')
+            ending = ending.replace('-', '')
             entries_block.append(ending)
         endings.append(entries_block)
     return endings
@@ -118,7 +117,7 @@ def openMutableModal(root):
     plurNounEntry.pack()
     Button(nounTab, text="Добавить", command=partial(saveMutableLexem,
                                                      NOUN,
-                                                     baseEntryNoun.get(),
+                                                     baseEntryNoun,
                                                      partial(getEndingsArray,[singNounEntry, plurNounEntry]))).pack()
     ##вкладка для прилагательного
     Label(adjTab, text="Основа").pack()
